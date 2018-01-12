@@ -1,11 +1,17 @@
 var generateMessage = (from, text) => {
-    var date = new Date()
-
     return {
         from,
         text,
-        createdAt: date.getTime()
+        createdAt: new Date().getTime()
     }
 }
 
-module.exports = {generateMessage}
+var generateLocationMessage = (from, latitude, longitude) => {
+    return {
+        from,
+        locationURL: `https://www.google.com/maps?q=${latitude},${longitude}`,
+        createdAt: new Date().getTime()
+    }
+}
+
+module.exports = {generateMessage, generateLocationMessage}
