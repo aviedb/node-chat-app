@@ -32,7 +32,7 @@ jQuery('#message-form').on('submit', function(e) {
     messageTextBox = jQuery('[name=message]')
 
     socket.emit('createMessage', {
-        from: 'User',
+        from: 'Anonymous',
         text: messageTextBox.val()
     }, function() {
         messageTextBox.val('')
