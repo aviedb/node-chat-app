@@ -23,11 +23,10 @@ io.on('connection', (socket) => {
         console.log('Create Message from client:', message)
         io.emit('newMessage', generateMessage(message.from, message.text))
         callback('this is from server')
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.from,
-        //     createdAt: new Date().getTime()
-        // })
+    })
+
+    socket.on('createLocationMessage', (coords) => {
+        io.emit('newMessage', generateMessage('Admin', `${coords.latitude}, ${coords.longitude}`))
     })
 
     socket.on('disconnect', () => {
