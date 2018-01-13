@@ -44,6 +44,13 @@ socket.on('updateUserList', function(users) {
     jQuery('#users').html(ol)
 })
 
+socket.on('setSideBarRoomName', function(room) {
+    var sidebarSelect = jQuery('#side-bar__room-name')
+    var template = sidebarSelect.html()
+    var html = Mustache.render(template, {room})
+    sidebarSelect.html(html)
+})
+
 socket.on('newMessage', function(message) {
     var formattedTime = moment(message.createdAt).format('h:mm a')
     var template = jQuery('#message-template').html()
