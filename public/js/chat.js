@@ -25,7 +25,12 @@ socket.on('connect', function() {
             alert(err)
             window.location.href = '/'
         } else {
-            console.log('No error')
+            var messagePlaceholder = jQuery(`<input type="text" name="message" placeholder="Send as ${params.name}" autofocus id="message-form-body"><button>Send</button>`)
+            jQuery('#message-form').html(messagePlaceholder)
+            jQuery('#message-form-body').focus()
+
+            var setSideBarRoomName = jQuery('<h3></h3>').text(params.room)
+            jQuery('#side-bar__room-name').html(setSideBarRoomName)
         }
     })
 })
@@ -44,26 +49,26 @@ socket.on('updateUserList', function(users) {
     jQuery('#users').html(ol)
 })
 
-socket.on('setMessageFormButtonName', function(name) {
-    var input = jQuery(`<input type="text" name="message" placeholder="Send as ${name}" autofocus id="message-form-body"><button>Send</button>`)
-    jQuery('#message-form').html(input)
-    jQuery('#message-form-body').focus()
+// socket.on('setMessageFormButtonName', function(name) {
+//     var input = jQuery(`<input type="text" name="message" placeholder="Send as ${name}" autofocus id="message-form-body"><button>Send</button>`)
+//     jQuery('#message-form').html(input)
+//     jQuery('#message-form-body').focus()
     
-    // var messageFormSelect = jQuery('#send-button')
-    // var template = messageFormSelect.html()
-    // var html = Mustache.render(template, {name: `Send as ${name}`})
-    // messageFormSelect.html(html)
-})
+//     // var messageFormSelect = jQuery('#send-button')
+//     // var template = messageFormSelect.html()
+//     // var html = Mustache.render(template, {name: `Send as ${name}`})
+//     // messageFormSelect.html(html)
+// })
 
-socket.on('setSideBarRoomName', function(room) {
-    var html = jQuery('<h3></h3>').text(room)
-    jQuery('#side-bar__room-name').html(html)
+// socket.on('setSideBarRoomName', function(room) {
+//     var html = jQuery('<h3></h3>').text(room)
+//     jQuery('#side-bar__room-name').html(html)
 
-    // var sidebarSelect = jQuery('#side-bar__room-name')
-    // var template = sidebarSelect.html()
-    // var html = Mustache.render(template, {room})
-    // sidebarSelect.html(html)
-})
+//     // var sidebarSelect = jQuery('#side-bar__room-name')
+//     // var template = sidebarSelect.html()
+//     // var html = Mustache.render(template, {room})
+//     // sidebarSelect.html(html)
+// })
 
 socket.on('newMessage', function(message) {
     var formattedTime = moment(message.createdAt).format('h:mm a')
