@@ -44,6 +44,13 @@ socket.on('updateUserList', function(users) {
     jQuery('#users').html(ol)
 })
 
+socket.on('setMessageFormButtonName', function(name) {
+    var messageFormSelect = jQuery('#message-form')
+    var template = messageFormSelect.html()
+    var html = Mustache.render(template, {name: `Send as ${name}`})
+    messageFormSelect.html(html)
+})
+
 socket.on('setSideBarRoomName', function(room) {
     var sidebarSelect = jQuery('#side-bar__room-name')
     var template = sidebarSelect.html()
