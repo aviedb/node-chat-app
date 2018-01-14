@@ -21,19 +21,25 @@ io.on('connection', (socket) => {
 
     socket.on('join', (params, callback) => {
         if(!isRealString(params.name) || !isRealString(params.room)) {
-            return callback('Name and room name are required.')
+            return callback('Username and Room ID are required.')
+        } else {
+            users.getUserList(params.room).forEach(user => {
+                if(user === params.name) {
+                    return callback(`Username ${params.name} already taken`)
+                }
+            })
+
+            socket.join(params.room)
+            users.removeUser(socket.id)
+            users.addUser(socket.id, params.name, params.room)
+    
+            io.to(params.room).emit('updateUserList', users.getUserList(params.room))
+            socket.emit('setSideBarRoomName', params.room)
+            socket.emit('setMessageFormButtonName', params.name)
+            socket.emit('newMessage', generateMessage('Admin', `Welcome to ${params.room} chat room`))
+            socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
+            callback()
         }
-
-        socket.join(params.room)
-        users.removeUser(socket.id)
-        users.addUser(socket.id, params.name, params.room)
-
-        io.to(params.room).emit('updateUserList', users.getUserList(params.room))
-        socket.emit('setSideBarRoomName', params.room)
-        socket.emit('setMessageFormButtonName', params.name)
-        socket.emit('newMessage', generateMessage('Admin', `Welcome to ${params.room} chat room`))
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
-        callback()
     })
 
     socket.on('createMessage', (message, callback) => {
