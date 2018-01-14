@@ -45,17 +45,24 @@ socket.on('updateUserList', function(users) {
 })
 
 socket.on('setMessageFormButtonName', function(name) {
-    var messageFormSelect = jQuery('#message-form')
-    var template = messageFormSelect.html()
-    var html = Mustache.render(template, {name: `Send as ${name}`})
-    messageFormSelect.html(html)
+    var input = jQuery(`<input type="text" name="message" placeholder="${name}" autofocus autocomplete="off">`)
+    input.append('<button>Send</button>')
+    jQuery('#message-form').html(input)
+    
+    // var messageFormSelect = jQuery('#send-button')
+    // var template = messageFormSelect.html()
+    // var html = Mustache.render(template, {name: `Send as ${name}`})
+    // messageFormSelect.html(html)
 })
 
 socket.on('setSideBarRoomName', function(room) {
-    var sidebarSelect = jQuery('#side-bar__room-name')
-    var template = sidebarSelect.html()
-    var html = Mustache.render(template, {room})
-    sidebarSelect.html(html)
+    var html = jQuery('<h3></h3>').text(room)
+    jQuery('#side-bar__room-name').html(html)
+
+    // var sidebarSelect = jQuery('#side-bar__room-name')
+    // var template = sidebarSelect.html()
+    // var html = Mustache.render(template, {room})
+    // sidebarSelect.html(html)
 })
 
 socket.on('newMessage', function(message) {
