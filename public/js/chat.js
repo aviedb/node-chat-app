@@ -45,8 +45,7 @@ socket.on('updateUserList', function(users) {
 })
 
 socket.on('setMessageFormButtonName', function(name) {
-    var input = jQuery(`<input type="text" name="message" placeholder="Send as ${name}" autofocus id="message-form-body">`)
-    input.append('<button>Send</button>')
+    var input = jQuery(`<input type="text" name="message" placeholder="Send as ${name}" autofocus id="message-form-body"><button>Send</button>`)
     jQuery('#message-form').html(input)
     jQuery('#message-form-body').focus()
     
