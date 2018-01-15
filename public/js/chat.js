@@ -25,6 +25,8 @@ socket.on('connect', function() {
             alert(err)
             window.location.href = '/'
         } else {
+            jQuery('#share-loct').removeAttr('disabled')
+
             var messagePlaceholder = jQuery(`<input type="text" name="message" placeholder="Send as ${params.name}" autofocus id="message-form-body"><button>Send</button>`)
             jQuery('#message-form').html(messagePlaceholder)
             jQuery('#message-form-body').focus()
