@@ -74,7 +74,7 @@ io.on('connection', (socket) => {
         if(user) {
             io.to(user.room).emit('updateUserList', users.getUserList(user.room))
             io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`))
-            log
+            
             console.log(`${user.name} disconnected from ${user.room}`) // to acknowledge server that a user has been disconnected
         }
     })
