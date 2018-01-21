@@ -1,7 +1,7 @@
 const path = require('path')
 const http = require('http')
-const express = require('express')
-const socketIO = require('socket.io')
+const express = require('express') // requiring third party module express
+const socketIO = require('socket.io') // requiring third party module socket.io
 
 const {generateMessage, generateLocationMessage} = require('./utils/message')
 const {isRealString} = require('./utils/validations')
@@ -10,38 +10,35 @@ const {Users} = require('./utils/users')
 const publicPath = path.join(__dirname, '../public')
 const app = express()
 const port = process.env.PORT || 3000
-var server = http.createServer(app)
-var io = socketIO(server)
-var users = new Users()
+const server = http.createServer(app)
+const io = socketIO(server)
+const users = new Users()
 
 app.use(express.static(publicPath))
 
 io.on('connection', (socket) => {
-    console.log('New user connected')
-
     socket.on('join', (params, callback) => {
         if(!isRealString(params.name) || !isRealString(params.room)) {
             return callback('Username and Room ID are required.')
-        }
+        } // User cant login if the Username or Room ID is not valid
 
-        var cek
-        users.getUserList(params.room).forEach(user => {
-            if(user === params.name) {
-                cek = true
+        var usernameAlreadyTaken
+        users.getUserList(params.room).forEach(username => {
+            if(username === params.name) {
+                usernameAlreadyTaken = true
             }
         })
 
-        if(cek) {
+        if(usernameAlreadyTaken) {
             return callback(`Username ${params.name} already taken`)
         }
+        console.log(`${params.name} connected to ${params.room}`) // to acknowledge user that a user has been connected
 
-        socket.join(params.room)
-        users.removeUser(socket.id)
-        users.addUser(socket.id, params.name, params.room)
+        socket.join(params.room) // joining user by room
+        users.removeUser(socket.id) // to make sure that the ID is unique
+        users.addUser(socket.id, params.name, params.room) //adding user to server
 
         io.to(params.room).emit('updateUserList', users.getUserList(params.room))
-        // socket.emit('setSideBarRoomName', params.room)
-        // socket.emit('setMessageFormButtonName', params.name)
         socket.emit('newMessage', generateMessage('Admin', `Welcome to ${params.room} chat room`))
         socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
         callback()
@@ -53,7 +50,8 @@ io.on('connection', (socket) => {
         if(user && isRealString(message.text)) {
             socket.broadcast.to(user.room).emit('newMessage', generateMessage(user.name, message.text))
             socket.emit('newMessage', generateMessage('You', message.text))
-            // io.to(user.room).emit('newMessage', generateMessage(user.name, message.text))
+
+            console.log(`${user.name} to ${user.room}: "${message.text}"`)
         }
 
         callback()
@@ -65,7 +63,8 @@ io.on('connection', (socket) => {
         if(user) {
             socket.broadcast.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
             socket.emit('newLocationMessage', generateLocationMessage('You', coords.latitude, coords.longitude))
-            // io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
+
+            console.log(`${user.name} is sending location to ${user.room} [${coords.latitude},${coords.longitude}]`) // to acknowledge server that a user is sending location
         }
     })
 
@@ -75,6 +74,8 @@ io.on('connection', (socket) => {
         if(user) {
             io.to(user.room).emit('updateUserList', users.getUserList(user.room))
             io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`))
+            
+            console.log(`${user.name} has been disconnected from ${user.room}`) // to acknowledge server that a user has been disconnected
         }
     })
 })
