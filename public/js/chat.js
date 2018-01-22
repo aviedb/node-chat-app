@@ -1,5 +1,6 @@
 var socket = io();
 
+// Function for autoscrolling
 function scrollToBottom() {
     // Selectors
     var messages = jQuery('#messages')
@@ -20,8 +21,10 @@ function scrollToBottom() {
 socket.on('connect', function() {
     var params = jQuery.deparam(window.location.search)
 
+    // Sending 'join' event to server when a new user connected
     socket.emit('join', params, function(err) {
         if(err) {
+            // If there's an error, user'll be sent back to homepage
             alert(err)
             window.location.href = '/'
         } else {
@@ -41,8 +44,10 @@ socket.on('connect', function() {
 
 socket.on('disconnect', function() {
     console.log('Disconnected from server')
-}) // to acknowledge user that they have been disconnected from server
+}) // To acknowledge user that they have been disconnected from server
 
+
+// Listener of 'updateUserList' event that was sent by server
 socket.on('updateUserList', function(users) {
     var ol = jQuery('<ol></ol>')
 
@@ -53,6 +58,8 @@ socket.on('updateUserList', function(users) {
     jQuery('#users').html(ol)
 }) // Updating the User list on the side bar
 
+
+// Listener of 'newMessage' event that was sent by server
 socket.on('newMessage', function(message) {
     var formattedTime = moment(message.createdAt).format('h:mm a')
     var template = jQuery('#message-template').html()
@@ -66,6 +73,7 @@ socket.on('newMessage', function(message) {
     scrollToBottom()
 })
 
+// Listener of 'newLocationMessage' event that was sent by server
 socket.on('newLocationMessage', function(message) {
     var formattedTime = moment(message.createdAt).format('h:mm a')
     var template = jQuery('#location-message-template').html()
@@ -79,33 +87,41 @@ socket.on('newLocationMessage', function(message) {
     scrollToBottom()
 })
 
+
+// Do something when the 'send' button / enter key clicked
 jQuery('#message-form').on('submit', function(e) {
-    e.preventDefault() // to prevent the default behaviour that refresh the page
+    e.preventDefault() // To prevent the default behaviour that refresh the page
 
     messageTextBox = jQuery('[name=message]')
 
+    // Sending 'createMessage' event to server
     socket.emit('createMessage', {
         text: messageTextBox.val()
     }, function() {
-        messageTextBox.val('') // to erase the sent message from the text box
+        messageTextBox.val('') // To erase the sent message from the text box
     })
 })
 
+// Do something when the 'share location' button clicked
 var locationButton = jQuery('#share-loct')
 locationButton.on('click', function () {
     if (!navigator.geolocation) {
         return alert('Geolocation not supported by your browser.')
     }
 
-    locationButton.attr('disabled', 'disabled').text('Sending location...') // to acknowlege user that it is sending location
+    // Acknowlege user that it is sending location
+    locationButton.attr('disabled', 'disabled').text('Sending location...')
 
     navigator.geolocation.getCurrentPosition(function (position) {
         locationButton.removeAttr('disabled').text('Share location')
+        
+        // Sending 'createLocationMessage' event to server
         socket.emit('createLocationMessage', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         })
     }, function () {
+        // If there's something wrong, like location is not allowed by the browser or no internet
         locationButton.removeAttr('disabled').text('Share location')
         alert('Unable to fetch location.')
     })
