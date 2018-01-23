@@ -17,11 +17,11 @@ const users = new Users()
 app.use(express.static(publicPath))
 
 io.on('connection', (socket) => {
-    // Listener og 'join' event sent by user
+    // Listener of 'join' event sent by user
     socket.on('join', (params, callback) => {
         if(!isRealString(params.name) || !isRealString(params.room)) {
             return callback('Username and Room ID are required.')
-        } // User cant login if the Username or Room ID is not valid
+        } // If the username or room ID is not valid, user'll be sent back to homepage
 
         var usernameAlreadyTaken
         users.getUserList(params.room).forEach(username => {
