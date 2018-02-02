@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
             socket.emit('newLocationMessage', generateLocationMessage('You', coords.latitude, coords.longitude))
 
             // Acknowledge server that a user is sending location
-            console.log(`${user.name} is sending location to ${user.room} [${coords.latitude},${coords.longitude}]`)
+            console.log(`${user.name} to ${user.room}: location [${coords.latitude},${coords.longitude}]`)
         }
     })
 
