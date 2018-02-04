@@ -9,7 +9,7 @@ const {Users} = require('./utils/users')
 
 const publicPath = path.join(__dirname, '../public')
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 8080
 const server = http.createServer(app)
 const io = socketIO(server)
 const users = new Users()
